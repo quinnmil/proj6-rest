@@ -56,7 +56,7 @@ times. For examples, see below.
    "http://<host:port>/listOpenOnly/json?top=5" should return top 5 open times only (in ascending order) in JSON format
 
 * You'll also design consumer programs (e.g., in jQuery) to use the service
-  that you expose. "website" inside DockerRestAPI is an example of that. It is
+  that you expose. "website" folder inside DockerRestAPI is an example of that. It is
   uses PHP. You're welcome to use either PHP or jQuery to consume your
   services. NOTE: your consumer program should be in a different container like
   example in DockerRestAPI.

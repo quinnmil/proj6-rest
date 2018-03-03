@@ -49,7 +49,7 @@
         <h1>/ListOpenOnly</h1>
         <ul>
             <?php
-            $json = file_get_contents('http://laptop-service/ListOpenOnly');
+            $json = file_get_contents('http://laptop-service/listOpenOnly');
 
             $obj = json_decode($json);
             $times = $obj->result;
@@ -69,7 +69,7 @@
         <h1>/ListClosedOnly</h1>
         <ul>
             <?php
-            $json = file_get_contents('http://laptop-service/ListClosedOnly');
+            $json = file_get_contents('http://laptop-service/listClosedOnly');
 
             $obj = json_decode($json);
             $times = $obj->result;

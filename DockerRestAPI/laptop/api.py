@@ -1,7 +1,9 @@
 # Laptop Service
+import json
+import csv
 import flask
-from flask import Flask, request
-from flask_restful import Resource, Api
+from flask import Flask, request, Response
+from flask_restful import Resource, Api, reqparse
 import pymongo
 from pymongo import MongoClient
 import sys
@@ -18,78 +20,123 @@ db = client.tododb
 collection = db.control
 
 
-class Laptop(Resource):
-    def get(self):
-        return {
-            'Laptops': ['Mac OS', 'Dell', 
-            'Windozzee',
-	    'Yet another laptop!',
-	    'Yet yet another laptop!'
-            ]
-        }
-
-class HelloWorld (Resource):
-	def get(self):
-		return {'value': 'hello world'}
-
+# Resources 
+# ====================
 class ListAll (Resource):
-    def get(self):
-        limit = 20
-        top = request.args.get('top')
-        if top is not None:
-            limit = top
-        allTimes = collection.find().limit(int(limit))
-        # app.logger.debug(entries[0])
-        result = []
-        for entry in allTimes:
-            result.append({
-                'open' : entry ['open_time'],
-                'close': entry ['close_time'],
-                'km' : entry ['km']
-                })
+	def get(self,top = None):
+		record = getAll(None,True,True)
+		return flask.jsonify(result= record)
 
-        return flask.jsonify(result= result)
 
 class ListOpenOnly (Resource):
-    def get(self):
-        limit = 20
-        top = request.args.get('top')
-        if top is not None:
-            limit = top
-        allOpen = collection.find().limit(int(limit))
-        result = []
-        for entry in allOpen:
-            result.append({
-                'open' : entry ['open_time']
-                })
-        return flask.jsonify(result = result)
+	def get(self, top = None):
+		if top is not None:
+			record = getAll(top,True,False,sortField = "open_time")  
+		else:
+			record = getAll(None,True,False,sortField = "open_time")		
+		return flask.jsonify(result= record)
 
 
 
 class ListClosedOnly (Resource):
-    def get(self):
-        limit = 20
-        top = request.args.get('top')
-        if top is not None:
-            limit = top
-        allClose = collection.find().limit(int(limit))
-        result = []
-        for entry in allClose:
-            result.append({
-                'close' : entry ['close_time']
-                })
-        return flask.jsonify(result = result)
+	def get(self, top = None):
+		if top is not None:
+			record = getAll(top,False,True,sortField = "close_time")
+		else:
+			record = getAll(None,False,True)
+		return flask.jsonify(result= record)
+
+class listAllcsv(Resource):
+	def get(self):
+		record = getAll(None,True,True)
+		json2csv(record,True,True)
+		csvfile = open('data.csv', 'r')
+		return Response(csvfile, mimetype='text/csv')
+
+
+class listOpenOnlycsv(Resource):
+	def get(self,top = None):
+		
+		if top is not None:
+			record = getAll(top,True,False,sortField = "open_time")
+		else:
+			record = getAll(None,True,False,sortField = "open_time")
+
+		json2csv(record,True,False)
+		csvfile = open('data.csv', 'r')
+		return Response(csvfile, mimetype='text/csv')
+
+class listCloseOnlycsv(Resource):
+	def get(self,top = None):
+		if top is not None:
+			record = getAll(top,True,False,sortField = "close_time")
+		else:
+			record = getAll(None,True,False,sortField = "close_time")
 
 
 
 # Create routes
-# Another way, without decorators
-api.add_resource(Laptop, '/')
-api.add_resource(HelloWorld,'/hi')
+api.add_resource(ListAll,'/listAll','/listAll/json','/listAll/top/<top>','/listAll/json/top/<top>')
+api.add_resource(ListOpenOnly, '/listOpenOnly', '/listOpenOnly/top/<top>','/listOpenOnly/json','/listOpenOnly/json/top/<top>')
+api.add_resource(ListClosedOnly, '/listCloseOnly','/listCloseOnly/top/<top>','/listCLoseOnly/json/top/<top>')
+api.add_resource(listAllcsv, '/listAll/csv', '/listAll/csv/top/<top>')
+api.add_resource(listOpenOnlycsv, '/listOpenOnly/csv', '/listOpenOnly/csv/top/<top>')
+api.add_resource(listCloseOnlycsv, '/listCloseOnly/csv', '/listCloseOnly/csv/top/<top>')
 
-api.add_resource(ListAll,'/listAll','/listAll/json')
-api.add_resource(ListOpenOnly, '/listOpenOnly', '/listOpenOnly/json')
-api.add_resource(ListClosedOnly, '/listClosedOnly','/listCLosedOnly/json')
+#  functions: 
+# ===========================
+def getAll(top,isOpen,isClose,sortField = None):
+	limit = 20
+	sortStr = "open_time"
+	if top is not None:
+		limit = top
+	if sortField is not None:
+		sortStr = sortField
+
+	allTimes = collection.find().sort(sortStr, pymongo.ASCENDING).limit(int(limit))
+	result = []
+	for entry in allTimes:
+		if isOpen and isClose:
+			result.append({
+				'open': entry['open_time'],
+				'close': entry['close_time'],
+				'km': entry['km']
+				})
+		elif isOpen:
+			result.append({
+				'open': entry['open_time'],
+				'km': entry['km']
+				})
+		else:
+			result.append({
+				'close': entry['close_time'],
+				'km': entry['km']
+				})
+	app.logger.debug(result)
+	return result
+
+def json2csv(jsonObj,ifOpen,ifClose):
+	obj = jsonObj
+	csvfile = open('data.csv', 'w')
+	out = csv.writer(csvfile)
+
+	if ifOpen and ifClose:
+		out.writerow(['km','open','close'])
+		for x in obj:
+			out.writerow([x['km'],
+					x['open'],
+					x['close']])
+	elif ifOpen:
+		out.writerow(['km','open'])
+		for x in obj:
+			out.writerow([x['km'],
+					x['open']])
+	else:
+		out.writerow(['km','close'])
+		for x in obj:
+			out.writerow([x['km'],
+					x['close']])	
+
 # Run the application
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80, debug=True)
+	app.run(host='0.0.0.0', port=80, debug=True)

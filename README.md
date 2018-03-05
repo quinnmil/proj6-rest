@@ -1,27 +1,39 @@
 # Project 6: Brevet time calculator service
 
 Simple listing service from project 5 stored in MongoDB database.
+Implemented by: Quinn Milionis
+Contact: qdm@uoregon.edu
 
-## What is in this repository
 
-You have a minimal implementation of Docker compose in DockerRestAPI folder,
-using which you can create REST API-based services (as demonstrated in 
-class). Refer to the lecture slide "05a-Mongo-Docker-Compose.pdf" (dated 
-02/15/2018) for information about how to use Docker compose. 
+#### About
+- Main Application calculates control times for brevets. 
+- This essentially replaces the calcuator at https://rusa.org/octime_acp.html with flask and ajax. 
+- Subsequent updates create and maintain a database for storing these brevet times.
 
-## Recap 
 
-You will reuse *your* code from project
-5 (https://github.com/UOCIS322/proj5-mongo). Recall: you created the 
-following functionalities. 1) Two buttons ("Submit") and ("Display") in
-the page where you have controle times. 2) On clicking the Submit 
-button, the control times were be entered into the database. 3) On 
-clicking the Display button, the entries from the database were be 
-displayed in a new page. You also handled error cases appropriately. 
+- Controls are essentially "checkpoints" where a ride has to get proof of passage. The control times are the minimum and maximum times by which the rider has to arrive at the location. 
+- The algorithm for calculating controle times is described at
+https://rusa.org/octime_alg.html .  Additional background information
+is in https://rusa.org/pages/rulesForRiders .
+- Updated version in this project included two new buttons, Submit and Display. 'Submit' transmits the table data to a database, while 'Display' returns those database entires on a sepeate page.
 
-## Functionality you will add
+## Instructions
 
-This project has three parts: 
+- Navigate to the /DockerRestAPI directory in a Unix shell. 
+
+- With docker running, use 'docker-compose build up' to build and run.
+
+- To access the following RESTful services, navigae to 'localhost:5000' in a browswer with the docker-compose files running. 
+
+- To view the Brevet calculator and add entries into the database, navigate to 'localhost:5005'
+
+- To view a specific service, go to 'localhost:5001/SERVICE' with SERVICE replaced with any of the services described in the project description below.
+
+- to display a set amnount of results, the url can be modified with '/top/NUM' where NUM is replaced by an integer. 
+
+## Project Description:
+
+ project has three parts: 
 
 * You will design RESTful service to expose what is stored in MongoDB.
 Specifically, you'll use the boilerplate given in DockerRestAPI folder, and
@@ -61,12 +73,3 @@ times. For examples, see below.
   services. NOTE: your consumer program should be in a different container like
   example in DockerRestAPI.
 
-## Tasks
-
-You'll turn in your credentials.ini using which we will get the following:
-
-* The working application with three parts.
-
-* Dockerfile
-
-* docker-compose.yml

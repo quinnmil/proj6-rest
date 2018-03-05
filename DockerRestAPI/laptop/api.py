@@ -69,9 +69,12 @@ class listOpenOnlycsv(Resource):
 class listCloseOnlycsv(Resource):
 	def get(self,top = None):
 		if top is not None:
-			record = getAll(top,True,False,sortField = "close_time")
+			record = getAll(top,False,True,sortField = "close_time")
 		else:
-			record = getAll(None,True,False,sortField = "close_time")
+			record = getAll(None,False,True,sortField = "close_time")
+		json2csv(record,False,True)
+		csvfile = open('data.csv', 'r')
+		return Response(csvfile, mimetype='text/csv')
 
 
 

@@ -77,7 +77,7 @@
         <h1>/ListAll Top 3</h1>
         <ul>
             <?php
-            $json = file_get_contents('http://laptop-service/listOpenOnly/top/3');
+            $json = file_get_contents('http://laptop-service/listAll/top/3');
 
             $obj = json_decode($json);
             $times = $obj->result;
@@ -124,15 +124,26 @@
         </ul>
          <h1>/listAllCsv</h1>
         <ul>
-            <?php
-            // $top = $_GET['top'];
-            // echo "<li>$top</li>";
-            // $url = "http://laptop-service/listCloseOnly/top/" . $top;
-            // echo "<li>$url</li>";
+        <?php
+        $entry = file_get_contents('http://laptop-service/listAll/csv');
+        echo nl2br($entry);
+                   
 
-            // $url = 'http://laptop-service/listClosedOnly/?top=' . urlencode($top);
-            
-            $data = file_get_contents('http://laptop-service/listAll/csv');
+            ?>
+        </ul>
+
+        <h1>/listOpenOnlyCsv</h1>
+        <ul>
+            <?php
+            $data = file_get_contents('http://laptop-service/listOpenOnly/csv');
+            echo nl2br($data);
+            ?>
+        </ul>
+
+           <h1>/listClosedOnlyCsv</h1>
+        <ul>
+            <?php
+            $data = file_get_contents('http://laptop-service/listCloseOnly/csv');
             echo nl2br($data);
             ?>
         </ul>

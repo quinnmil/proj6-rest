@@ -29,7 +29,7 @@ is in https://rusa.org/pages/rulesForRiders .
 
 - To view a specific service, go to 'localhost:5001/SERVICE' with SERVICE replaced with any of the services described in the project description below.
 
-- to display a set amnount of results, the url can be modified with '/top/NUM' where NUM is replaced by an integer. 
+- to display a set amnount of results, the url can be modified with '?top=NUM' where NUM is replaced by an integer. 
 
 ## Project Description:
 

@@ -77,7 +77,7 @@
         <h1>/ListAll Top 3</h1>
         <ul>
             <?php
-            $json = file_get_contents('http://laptop-service/listAll/top/3');
+            $json = file_get_contents('http://laptop-service/listAll?top=3');
 
             $obj = json_decode($json);
             $times = $obj->result;
@@ -104,7 +104,7 @@
 
             // $url = 'http://laptop-service/listClosedOnly/?top=' . urlencode($top);
             
-            $json = file_get_contents('http://laptop-service/listCloseOnly/top/2');
+            $json = file_get_contents('http://laptop-service/listCloseOnly?top=2');
 
             $obj = json_decode($json);
             $times = $obj->result;

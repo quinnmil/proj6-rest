@@ -24,13 +24,19 @@ collection = db.control
 # ====================
 class ListAll (Resource):
 	def get(self,top = None):
-		record = getAll(None,True,True)
+		top = request.args.get('top', 0, type=int)
+		if top is not 0:
+			record = getAll(top,True,True)
+		else:
+			record = getAll(None,True,False)
 		return flask.jsonify(result= record)
 
 
 class ListOpenOnly (Resource):
-	def get(self, top = None):
-		if top is not None:
+	def get(self):
+
+		top = request.args.get('top', 0, type=int)
+		if top is not 0:
 			record = getAll(top,True,False,sortField = "open_time")  
 		else:
 			record = getAll(None,True,False,sortField = "open_time")		
@@ -39,8 +45,10 @@ class ListOpenOnly (Resource):
 
 
 class ListClosedOnly (Resource):
-	def get(self, top = None):
-		if top is not None:
+	def get(self):
+		top = request.args.get('top', 0, type=int)
+
+		if top is not 0:
 			record = getAll(top,False,True,sortField = "close_time")
 		else:
 			record = getAll(None,False,True)
@@ -48,16 +56,21 @@ class ListClosedOnly (Resource):
 
 class listAllcsv(Resource):
 	def get(self):
-		record = getAll(None,True,True)
+		top = request.args.get('top', 0, type=int)
+		if top is not 0:
+			record = getAll(top,True,True)
+		else:	
+			record = getAll(None,True,True)
 		json2csv(record,True,True)
 		csvfile = open('data.csv', 'r')
 		return Response(csvfile, mimetype='text/csv')
 
 
 class listOpenOnlycsv(Resource):
-	def get(self,top = None):
-		
-		if top is not None:
+	def get(self,):
+		top = request.args.get('top', 0, type=int)
+
+		if top is not 0:
 			record = getAll(top,True,False,sortField = "open_time")
 		else:
 			record = getAll(None,True,False,sortField = "open_time")
@@ -68,7 +81,9 @@ class listOpenOnlycsv(Resource):
 
 class listCloseOnlycsv(Resource):
 	def get(self,top = None):
-		if top is not None:
+		top = request.args.get('top', 0, type=int)
+
+		if top is not 0:
 			record = getAll(top,False,True,sortField = "close_time")
 		else:
 			record = getAll(None,False,True,sortField = "close_time")
@@ -79,12 +94,12 @@ class listCloseOnlycsv(Resource):
 
 
 # Create routes
-api.add_resource(ListAll,'/listAll','/listAll/json','/listAll/top/<top>','/listAll/json/top/<top>')
-api.add_resource(ListOpenOnly, '/listOpenOnly', '/listOpenOnly/top/<top>','/listOpenOnly/json','/listOpenOnly/json/top/<top>')
-api.add_resource(ListClosedOnly, '/listCloseOnly','/listCloseOnly/top/<top>','/listCLoseOnly/json/top/<top>')
-api.add_resource(listAllcsv, '/listAll/csv', '/listAll/csv/top/<top>')
-api.add_resource(listOpenOnlycsv, '/listOpenOnly/csv', '/listOpenOnly/csv/top/<top>')
-api.add_resource(listCloseOnlycsv, '/listCloseOnly/csv', '/listCloseOnly/csv/top/<top>')
+api.add_resource(ListAll,'/listAll','/listAll/json')
+api.add_resource(ListOpenOnly, '/listOpenOnly','/listOpenOnly/json')
+api.add_resource(ListClosedOnly, '/listCloseOnly','/listCLoseOnly/json')
+api.add_resource(listAllcsv, '/listAll/csv')
+api.add_resource(listOpenOnlycsv, '/listOpenOnly/csv')
+api.add_resource(listCloseOnlycsv, '/listCloseOnly/csv')
 
 #  functions: 
 # ===========================
